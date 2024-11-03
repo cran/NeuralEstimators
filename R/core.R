@@ -129,14 +129,14 @@ initialise_estimator <- function(
 #' @param M deprecated; use \code{m}
 #' @param K the number of parameter vectors sampled in the training set at each epoch; the size of the validation set is set to \code{K}/5.
 #' @param xi a list of objects used for data simulation (e.g., distance matrices); if it is provided, the parameter sampler is called as \code{sampler(K, xi)}.
-#' @param loss the loss function: a string ('absolute-error' for mean-absolute-error loss or 'squared-error' for mean-squared-error loss), or a string of Julia code defining the loss function.
+#' @param loss the loss function: a string ('absolute-error' for mean-absolute-error loss or 'squared-error' for mean-squared-error loss), or a string of Julia code defining the loss function. For some classes of estimators (e.g., `QuantileEstimator` and `RatioEstimator`), the loss function does not need to be specified.
 #' @param learning_rate the learning rate for the optimiser ADAM (default 1e-3)
-#' @param epochs the number of epochs
-#' @param stopping_epochs cease training if the risk doesn't improve in this number of epochs (default 5)
-#' @param batchsize the batchsize to use when performing stochastic gradient descent
+#' @param epochs the number of epochs to train the neural network. An epoch is one complete pass through the entire training data set when doing stochastic gradient descent.
+#' @param stopping_epochs cease training if the risk doesn't improve in this number of epochs (default 5).
+#' @param batchsize the batchsize to use when performing stochastic gradient descent, that is, the number of training samples processed between each update of the neural-network parameters. 
 #' @param savepath path to save the trained estimator and other information; if null (default), nothing is saved. Otherwise, the neural-network parameters (i.e., the weights and biases) will be saved during training as `bson` files; the risk function evaluated over the training and validation sets will also be saved, in the first and second columns of `loss_per_epoch.csv`, respectively; the best parameters (as measured by validation risk) will be saved as `best_network.bson`. 
-#' @param use_gpu a boolean indicating whether to use the GPU if it is available (default true)
-#' @param verbose a boolean indicating whether information should be printed to the console during training
+#' @param use_gpu a boolean indicating whether to use the GPU if one is available 
+#' @param verbose a boolean indicating whether information, including empirical risk values and timings, should be printed to the console during training.
 #' @param epochs_per_Z_refresh integer indicating how often to refresh the training data
 #' @param epochs_per_theta_refresh integer indicating how often to refresh the training parameters; must be a multiple of \code{epochs_per_Z_refresh}
 #' @param simulate_just_in_time  flag indicating whether we should simulate "just-in-time", in the sense that only a \code{batchsize} number of parameter vectors and corresponding data are in memory at a given time
@@ -343,8 +343,8 @@ train <- function(estimator,
      train_code, 
      loss_code,
     "
-    #optimiser = Flux.setup(OptimiserChain(WeightDecay(1e-4), Adam(learning_rate)), estimator), #NB this didn't work for some reason... come back to it if we end up needing to change to the `explicit` formulation for training flux models
-    optimiser = Adam(learning_rate),
+    #optimiser = Flux.setup(OptimiserChain(WeightDecay(1e-4), Flux.Adam(learning_rate)), estimator), #NB this didn't work for some reason... come back to it if we end up needing to change to the `explicit` formulation for training flux models
+    optimiser = Flux.Adam(learning_rate),
     epochs = epochs,
     batchsize = batchsize,
     savepath = savepath,
@@ -535,6 +535,7 @@ assess <- function(
 ) {
 
   if (!is.list(estimators)) estimators <- list(estimators)
+  if (is.vector(parameters)) parameters <- t(parameters)
 
   # Metaprogramming: Define the Julia code based on the value of the arguments
   estimator_names_code <- if (!is.null(estimator_names)) " estimator_names = estimator_names, " else ""
@@ -597,9 +598,9 @@ assess <- function(
 #' ## Apply the estimator
 #' estimate(estimator, Z)}
 estimate <- function(estimator, Z, theta = NULL, use_gpu = TRUE) {
-
-  if (!is.list(Z)) Z <- list(Z)
-
+  
+  if (!is.list(Z) & !("JuliaProxy" %in% class(Z))) Z <- list(Z) 
+  
   thetahat <- juliaLet('
   using NeuralEstimators, Flux
   
@@ -618,7 +619,6 @@ estimate <- function(estimator, Z, theta = NULL, use_gpu = TRUE) {
   
   return(thetahat)
 }
-
 
 #' @title bootstrap
 #' 

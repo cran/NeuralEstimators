@@ -15,7 +15,7 @@ test_that("julia can be called", {
   expect_equal(x, 2)
 })
 
-test_that("Flux is available", {
+test_that("Flux.jl is available", {
   juliaEval('
   # Install the package if not already installed
   using Pkg
@@ -28,7 +28,7 @@ test_that("Flux is available", {
   expect_equal(1, 1)
 })
 
-test_that("the Julia version of NeuralEstimators is available", {
+test_that("NeuralEstimators.jl is available", {
   juliaEval('
   # Install the package if not already installed
   using Pkg
@@ -37,6 +37,19 @@ test_that("the Julia version of NeuralEstimators is available", {
     Pkg.add(url = "https://github.com/msainsburydale/NeuralEstimators.jl") 
   end
   using NeuralEstimators
+')
+  expect_equal(1, 1)
+})
+
+test_that("Optim.jl is available", {
+  juliaEval('
+  # Install the package if not already installed
+  using Pkg
+  installed = "Optim" ∈ keys(Pkg.project().dependencies)
+  if !installed
+    Pkg.add("Optim") 
+  end
+  using Optim
 ')
   expect_equal(1, 1)
 })
@@ -162,6 +175,11 @@ test_that("the neural estimator can be assessed with assess()", {
   bias(assessment$estimates)
   rmse(assessment)
   rmse(assessment$estimates)
+  
+  # Test that parameters can be given as a vector in single-parameter case
+  estimator_one_param <- initialise_estimator(1, architecture = "MLP")
+  assessment <- assess(estimator_one_param, rnorm(100), Z_test)
+  
   expect_equal(1, 1)
 })
 
@@ -203,15 +221,19 @@ test_that("neural ratio estimator can be constructed and used to make inference"
   expect_equal(ncol(ratio), 2)
   expect_error(estimate(estimator, list(Z, Z), theta))
   
-  theta_0 <- c(0.2, 0.4)
+  # Grid-based methods for estimation/posterior sampling
   theta_grid <- t(expand.grid(seq(0, 1, len = 50), seq(0, 1, len = 50)))
-  mlestimate(estimator, Z, theta0 = theta_0) 
   mlestimate(estimator, Z, theta_grid = theta_grid)
-  mapestimate(estimator, Z, theta0 = theta_0) 
   mapestimate(estimator, Z, theta_grid = theta_grid)
-  # mapestimate(estimator, Z, theta_grid = theta_grid, prior = function(x) 1) # NB This requires the user to have installed the Julia package RCall
+  # mapestimate(estimator, Z, theta_grid = theta_grid, prior = function(x) 1) # NB This requires the user to have installed the Julia package RCall, which is not particularly stable
   sampleposterior(estimator, Z[[1]], theta_grid = theta_grid) 
   sampleposterior(estimator, Z, theta_grid = theta_grid)
   expect_error(sampleposterior(estimator, c(Z, Z), theta_grid = theta_grid))
   # sampleposterior(estimator, Z, theta_grid = theta_grid, prior = function(x) 1) # NB This requires the user to have installed the Julia package RCall
+  
+  # Gradient descent method for estimation
+  # juliaEval('using Optim')
+  # theta0 <- c(0.2, 0.4)
+  # mlestimate(estimator, Z, theta0 = theta0) 
+  # mapestimate(estimator, Z, theta0 = theta0) 
 })

@@ -1,6 +1,6 @@
 Package: NeuralEstimators
 Title: Likelihood-Free Parameter Estimation using Neural Networks
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: 
     person(given = "Matthew",
            family = "Sainsbury-Dale",
@@ -13,11 +13,12 @@ Encoding: UTF-8
 RoxygenNote: 7.3.2
 Imports: JuliaConnectoR, magrittr
 Suggests: dplyr, ggplot2, ggplotify, ggpubr, gridExtra, knitr,
-        rmarkdown, markdown, testthat (>= 3.0.0)
+        rmarkdown, markdown, R.rsp, testthat (>= 3.0.0)
 Config/testthat/edition: 3
 SystemRequirements: Julia (>= 1.9)
+VignetteBuilder: R.rsp
 NeedsCompilation: no
-Packaged: 2024-09-06 23:09:30 UTC; matt
+Packaged: 2024-11-03 07:21:57 UTC; matt
 Author: Matthew Sainsbury-Dale [aut, cre]
 Repository: CRAN
-Date/Publication: 2024-09-11 17:20:02 UTC
+Date/Publication: 2024-11-03 08:30:02 UTC
