@@ -5,7 +5,9 @@
 [![codecov](https://codecov.io/gh/msainsburydale/NeuralEstimators/branch/main/graph/badge.svg?token=6cXItEsKs5)](https://app.codecov.io/gh/msainsburydale/NeuralEstimators)
 
 [docs-dev-img]: https://img.shields.io/badge/vignette-blue.svg
-[docs-dev-url]: https://raw.githack.com/msainsburydale/NeuralEstimators/main/inst/doc/NeuralEstimators.html
+[docs-dev-url]: https://cran.r-project.org/package=NeuralEstimators/vignettes/NeuralEstimators.html
+
+
 
 [julia-repo-img]: https://img.shields.io/badge/Julia_repo-purple.svg
 [julia-repo-url]: https://github.com/msainsburydale/NeuralEstimators.jl
@@ -13,7 +15,7 @@
 [julia-docs-img]: https://img.shields.io/badge/Julia_docs-purple.svg
 [julia-docs-url]: https://msainsburydale.github.io/NeuralEstimators.jl/dev/
 
-This repository contains the `R` interface to the `Julia` package `NeuralEstimators` (see [here](https://github.com/msainsburydale/NeuralEstimators.jl)). The package facilitates the user-friendly development of neural point estimators, which are neural networks that map data to a point summary of the posterior distribution. These estimators are likelihood-free and amortised, in the sense that, after an initial setup cost, inference from observed data can be made in a fraction of the time required by conventional approaches. It also facilitates the construction of neural networks that approximate the likelihood-to-evidence ratio in an amortised fashion, which allows for making inference based on the likelihood function or the entire posterior distribution. The package caters for any model for which simulation is feasible by allowing the user to implicitly define their model via simulated data. See the [vignette](https://raw.githack.com/msainsburydale/NeuralEstimators/main/inst/doc/NeuralEstimators.html) to get started!
+This repository contains the `R` interface to the `Julia` package `NeuralEstimators` (see [here](https://github.com/msainsburydale/NeuralEstimators.jl)). The package facilitates the user-friendly development of neural point estimators, which are neural networks that map data to a point summary of the posterior distribution. These estimators are likelihood-free and amortised, in the sense that, after an initial setup cost, inference from observed data can be made in a fraction of the time required by conventional approaches. It also facilitates the construction of neural networks that approximate the likelihood-to-evidence ratio in an amortised fashion, which allows for making inference based on the likelihood function or the entire posterior distribution. The package caters for any model for which simulation is feasible by allowing the user to implicitly define their model via simulated data. See the [vignette](https://cran.r-project.org/package=NeuralEstimators/vignettes/NeuralEstimators.html) to get started!
 
 ### Installation
 

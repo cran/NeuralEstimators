@@ -394,12 +394,17 @@ tanhloss <- function(k) paste0("(x, y) -> tanhloss(x, y, ", k, ")")
 
 #' @title load a collection of saved weights of a neural estimator
 #' 
+#' @description 
+#' This function is deprecated and will be removed in a future version.
+#' Please use [loadstate()] instead, which provides more comprehensive functionality.
+#'
 #' @param estimator the neural estimator that we wish to load weights into
 #' @param filename file (including absolute path) of the neural-network weights saved as a \code{bson} file
 #' @seealso [loadstate()] 
 #' @return `estimator` updated with the saved weights 
 #' @export
 loadweights <- function(estimator, filename) {
+  warning("`loadweights()` is deprecated. Please use `loadstate()` instead.", call. = FALSE)
   juliaLet(
     '
     using NeuralEstimators, Flux
@@ -411,16 +416,19 @@ loadweights <- function(estimator, filename) {
 }
 
 #' @title load a saved state of a neural estimator
+#' 
+#' @description 
+#' Load a saved state of a neural estimator, including both weights and additional model parameters.
+#'
 #' @param estimator the neural estimator that we wish to load the state into
 #' @param filename file (including absolute path) of the neural-network state in a \code{bson} file
 #' @return `estimator` updated with the saved state 
 #' @export
 loadstate <- function(estimator, filename) {
+  juliaEval('using NeuralEstimators, Flux')
+  juliaEval('using BSON: @load')
   juliaLet(
     '
-    using NeuralEstimators
-    using Flux
-    using BSON: @load
     @load filename model_state
     Flux.loadmodel!(estimator, model_state)
     estimator
@@ -435,11 +443,10 @@ loadstate <- function(estimator, filename) {
 #' @return No return value, called for side effects
 #' @export
 savestate <- function(estimator, filename) {
+  juliaEval('using NeuralEstimators, Flux')
+  juliaEval('using BSON: @save')
   juliaLet(
     '
-    using NeuralEstimators
-    using Flux
-    using BSON: @save
     model_state = Flux.state(estimator)
     @save filename model_state
     ',
@@ -579,24 +586,25 @@ assess <- function(
 #' @description estimate parameters from observed data using a neural estimator
 #'
 #' @param estimator a neural estimator
-#' @param Z data; format should be amenable to the architecture of \code{estimator}
+#' @param Z data; format should be amenable to the architecture of `estimator`
 #' @param theta parameter vectors (only for neural estimators that take both the data and parameters as input, e.g., neural ratio estimators)
 #' @param use_gpu a boolean indicating whether to use the GPU if it is available (default true)
-#' @return a matrix of parameter estimates (i.e., \code{estimator} applied to \code{Z})
+#' @return a matrix of parameter estimates (i.e., `estimator` applied to `Z`)
 #' @export
 #' @examples
 #' \dontrun{
-#' library("NeuralEstimators")
-#' library("JuliaConnectoR")
+#' library(NeuralEstimators)
+#' library(JuliaConnectoR)
 #'
 #' ## Observed data: 100 replicates of a univariate random variable
-#' Z = matrix(rnorm(100), nrow = 1)
+#' Z <- matrix(rnorm(100), nrow = 1)
 #'
 #' ## Construct an (un-trained) point estimator
 #' estimator <- initialise_estimator(1, architecture = "MLP")
 #'
 #' ## Apply the estimator
-#' estimate(estimator, Z)}
+#' estimate(estimator, Z)
+#' }
 estimate <- function(estimator, Z, theta = NULL, use_gpu = TRUE) {
   
   if (!is.list(Z) & !("JuliaProxy" %in% class(Z))) Z <- list(Z) 
@@ -646,6 +654,7 @@ estimate <- function(estimator, Z, theta = NULL, use_gpu = TRUE) {
 #' ## Non-parametric bootstrap
 #' bootstrap(estimator, Z = Z)
 #' bootstrap(estimator, Z = Z, blocks = rep(1:5, each = m/5))
+#' }
 bootstrap <- function(estimator,
                       Z,
                       B = 400,
