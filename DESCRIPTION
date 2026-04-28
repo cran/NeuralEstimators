@@ -1,6 +1,6 @@
 Package: NeuralEstimators
 Title: Likelihood-Free Parameter Estimation using Neural Networks
-Version: 0.2.0
+Version: 0.2.1
 Authors@R: 
     person(given = "Matthew",
            family = "Sainsbury-Dale",
@@ -20,7 +20,7 @@ VignetteBuilder: R.rsp
 URL: https://github.com/msainsburydale/NeuralEstimators,
         https://msainsburydale.github.io/NeuralEstimators.jl/dev/
 NeedsCompilation: no
-Packaged: 2025-03-02 07:27:42 UTC; sainsbmd
+Packaged: 2026-04-28 08:35:20 UTC; sainsbmd
 Author: Matthew Sainsbury-Dale [aut, cre]
 Repository: CRAN
-Date/Publication: 2025-03-02 11:10:06 UTC
+Date/Publication: 2026-04-28 10:10:02 UTC
